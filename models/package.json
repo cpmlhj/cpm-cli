@@ -24,8 +24,5 @@
     },
     "bugs": {
         "url": "https://github.com/cpmlhj/cpm-cli/issues"
-    },
-    "publishConfig": {
-        "access": "public"
     }
 }

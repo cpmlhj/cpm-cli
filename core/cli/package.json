@@ -29,7 +29,7 @@
     "import-local": "^3.1.0"
   },
   "gitHead": "bd815235886be28d035b823615fc8e03030e688d",
-    "publishConfig": {
-        "access": "public"
-    }
+  "publishConfig": {
+    "access": "public"
+  }
 }

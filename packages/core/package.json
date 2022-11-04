@@ -29,7 +29,13 @@
     "url": "https://github.com/cpmlhj/cpm-cli/issues"
   },
   "dependencies": {
-    "import-local": "^3.1.0"
+    "@cpm-cli/helpers": "workspace:../helpers",
+    "@cpm-cli/utils": "workspace:../utils",
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.3",
+    "import-local": "^3.1.0",
+    "path-exists": "^4.0.0",
+    "user-home": "^3.0.0"
   },
   "gitHead": "2e953a793182ff465669cbc2cac97b8fb17f172a"
 }

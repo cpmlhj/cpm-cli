@@ -1,5 +1,11 @@
 #! /usr/bin/env node
 
 const importLocal = require('import-local')
+const {logger} = require('@cpm-cli/utils')
 
-console.log('init cli', __filename, importLocal(__filename))
+if (importLocal(__filename)) {
+    logger.info('使用本地路径包~')
+} else {
+    logger.info('running')
+    require('./lib')(process.argv.splice(2))
+}

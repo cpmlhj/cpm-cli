@@ -1,7 +1,7 @@
 {
-  "name": "@cpm-cli/utils",
-  "version": "1.0.5",
-  "description": "@cpm-cli/utils",
+  "name": "@cpm-cli/helpers",
+  "version": "1.0.0",
+  "description": "@cpm-cli/helpers",
   "author": "cpmlhj <345829331@qq.com>",
   "homepage": "https://github.com/cpmlhj/cpm-cli#readme",
   "license": "ISC",
@@ -20,14 +20,7 @@
     "type": "git",
     "url": "git+https://github.com/cpmlhj/cpm-cli.git"
   },
-  "scripts": {
-    "test": "node ./__tests__/@cpm-cli/utils.test.js"
-  },
   "bugs": {
     "url": "https://github.com/cpmlhj/cpm-cli/issues"
-  },
-  "gitHead": "2e953a793182ff465669cbc2cac97b8fb17f172a",
-  "dependencies": {
-    "npmlog": "^7.0.1"
   }
 }

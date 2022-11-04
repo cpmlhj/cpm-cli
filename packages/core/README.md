@@ -1,11 +1,11 @@
-# `commands`
+# `@cpm-cli/core`
 
 > TODO: description
 
 ## Usage
 
 ```
-const commands = require('commands');
+const core = require('@cpm-cli/core');
 
 // TODO: DEMONSTRATE API
 ```

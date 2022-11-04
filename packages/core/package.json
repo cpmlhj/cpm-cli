@@ -5,7 +5,9 @@
   "author": "cpmlhj <345829331@qq.com>",
   "homepage": "https://github.com/cpmlhj/cpm-cli#readme",
   "license": "ISC",
-  "main": "lib/index.js",
+  "bin": {
+    "pm": "./bin/index.js"
+  },
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -25,5 +27,8 @@
   },
   "bugs": {
     "url": "https://github.com/cpmlhj/cpm-cli/issues"
+  },
+  "dependencies": {
+    "import-local": "^3.1.0"
   }
 }

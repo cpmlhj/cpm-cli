@@ -7,8 +7,5 @@
     "license": "ISC",
     "dependencies": {
         "lerna": "^6.0.1"
-    },
-    "workspaces": [
-        "packages/*"
-    ]
+    }
 }

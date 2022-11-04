@@ -1,10 +1,27 @@
 lockfileVersion: 5.4
 
-specifiers:
-  lerna: ^6.0.1
+importers:
 
-dependencies:
-  lerna: 6.0.1
+  .:
+    specifiers:
+      lerna: ^6.0.1
+    dependencies:
+      lerna: 6.0.1
+
+  packages/commands:
+    specifiers: {}
+
+  packages/core:
+    specifiers:
+      import-local: ^3.1.0
+    dependencies:
+      import-local: 3.1.0
+
+  packages/models:
+    specifiers: {}
+
+  packages/utils:
+    specifiers: {}
 
 packages:
 

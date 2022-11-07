@@ -7,5 +7,5 @@ if (importLocal(__filename)) {
     logger.info('使用本地路径包~')
 } else {
     logger.info('running')
-    require('./lib')(process.argv.splice(2))
+    require('../lib')()
 }

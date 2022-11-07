@@ -32,6 +32,8 @@
     "@cpm-cli/helpers": "workspace:../helpers",
     "@cpm-cli/utils": "workspace:../utils",
     "colors": "^1.4.0",
+    "commander": "^9.4.1",
+      
     "dotenv": "^16.0.3",
     "import-local": "^3.1.0",
     "path-exists": "^4.0.0",

@@ -1,5 +1,6 @@
 'use strict';
 
 module.exports = {
-    logger: require('./log')
+    logger: require('./log'),
+    utils: require('./utils')
 }

@@ -45,6 +45,15 @@ async function getNpmSemverVersion({npmName, registry, targetVersion}) {
     return semverVersions && semverVersions.length > 0 && semverVersions[0] || null
 }
 
+async function getLatestNpmVersion({npmName, registry}) {
+    const versions = await getNpmVersion(npmName, registry)
+    if(versions) {
+        versions.sort((a,b) => semver.gt(a,b))
+        return versions[0]
+    }
+    return null
+}
+
 function getSemverVersion(base, vers, matchText) {
     return vers
         .filter(ve => semver.satisfies(ve, `${matchText}${base}`))
@@ -57,5 +66,6 @@ function getDetaultNpmRegistry(isOrigin = true) {
 
 module.exports = {
     getNpmInfo,
-    getNpmSemverVersion
+    getNpmSemverVersion,
+    getLatestNpmVersion
 }

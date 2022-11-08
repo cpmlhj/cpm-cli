@@ -1,6 +1,8 @@
 'use strict';
 
 const pkg = require('../package.json')
+const execCommand = require('./exec.js')
+
 const userHome = require('user-home')
 const pathEx = require('path-exists')
 const path = require('path')
@@ -68,10 +70,7 @@ function registerCommand() {
     .description('初始化 项目/组件 命令')
     .arguments('[projectName]', '项目/组件 名称')
     .option('-f, --force', '强制初始化项目', false)
-    .action((a,b,c) => {
-        const opt = c.optsWithGlobals()
-        console.log(a,b,opt)
-    })
+    .action(execCommand)
 
     // 监听targetPath 选项 修改全局执行路径
     program.on('option:targetPath', function (opt) {

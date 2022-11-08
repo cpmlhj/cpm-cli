@@ -1,7 +1,7 @@
 {
-  "name": "@cpm-cli/commands",
-  "version": "1.0.5",
-  "description": "@cpm-cli/commands",
+  "name": "@cpm-cli/init",
+  "version": "1.0.0",
+  "description": "@cpm-cli/init",
   "author": "cpmlhj <345829331@qq.com>",
   "homepage": "https://github.com/cpmlhj/cpm-cli#readme",
   "license": "ISC",
@@ -22,6 +22,5 @@
   },
   "bugs": {
     "url": "https://github.com/cpmlhj/cpm-cli/issues"
-  },
-  "gitHead": "2e953a793182ff465669cbc2cac97b8fb17f172a"
+  }
 }

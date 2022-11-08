@@ -7,6 +7,7 @@
  */
 
 const path = require('path')
+const cp = require('child_process')
 
 const {Package} = require('@cpm-cli/models')
 const {logger} = require('@cpm-cli/utils')
@@ -48,9 +49,32 @@ async function exec() {
             })
         }
         const entryFile = pkg.getEntryFilePath()
+        logger.info(entryFile)
+        if(entryFile) {
+           const code = `require('${entryFile}').call(null, ${JSON.stringify(commandObj.opts())})`
+           const child = Spawn('node', ['-e', code], {
+               cwd: process.cwd(),
+               stdio: 'inherit'
+           })
+            child.on('error', e => {
+                logger.error(e.message)
+                process.exit(-1)
+            })
+            child.on('exit', e=> {
+                logger.info('执行成功')
+                process.exit(e)
+            })
+        }
     } catch(e) {
         logger.error(colors.red(e.message))
     }
+}
+
+function Spawn(cmd, args, opt) {
+    const win32 = process.platform === 'win32'
+    const command = win32 ? 'cmd': cmd
+    const cmdArgs = win32 ? ['/c'].concat(cmd, args) : args
+    return cp.spawn(command, cmdArgs, opt || {})
 }
 
 module.exports = exec

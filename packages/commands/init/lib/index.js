@@ -1,8 +1,8 @@
 'use strict';
 
 
-function init() {
-    return "Hello from init";
+function init(...args) {
+    console.log( "Hello from init", args);
 }
 
 

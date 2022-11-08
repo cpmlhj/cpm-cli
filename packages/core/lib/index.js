@@ -53,8 +53,8 @@ function registerCommand() {
     program
     .usage('<command> [option]')
     .version(pkg.version)
-    .option('-d --debug', '是否开启debug 模式', false)
-    .option('-tp, --targetPath', '本地执行路径', '')
+    .option('-d, --debug', '是否开启debug 模式', false)
+    .option('-tp, --targetPath <targetPath>', '本地执行路径', '')
 
 
     // 监听debug 选项 修改全局log级别
@@ -79,7 +79,7 @@ function registerCommand() {
     })
 
     program.on('command:*', function() {
-        console.log(this.commands, '23333')
+//        console.log(this.commands, '23333')
     })
 
     program.parse();

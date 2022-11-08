@@ -1,12 +1,13 @@
 'use strict'
 
 const {utils, logger} = require('@cpm-cli/utils')
-const {getLatestNpmVersion} = require('@cpm-cli/helpers')
+const {getLatestNpmVersion, formatPath, getDetaultNpmRegistry} = require('@cpm-cli/helpers')
 
 const path = require('path')
 const pathEx= require('path-exists')
 const fse = require('fs-extra')
-const pkgDir = require('pkg-dir')
+const pkgDir = require('pkg-dir').sync
+const npminstall = require('npminstall')
 
 /**
  * npmPackge模型
@@ -16,7 +17,6 @@ const pkgDir = require('pkg-dir')
  */
 class Package {
   constructor(opts) {
-      console.log(opts, '=sd')
       if(!opts || !utils.isObject(opts)) {
           throw new Error('npmPackge 缺失初始化属性 opts')
       }
@@ -36,6 +36,12 @@ class Package {
               this.storeDir,
               `_${this.npmCacheFilePrefix}@${this.packageVersion}@${this.packageName}`
       )
+  }
+    specialCacheFilePath(version) {
+      return path.resolve(
+              this.storeDir,
+              `_${this.npmCacheFilePrefix}@${version}@${this.packageName}`
+              )
   }
 
    async prepare() {
@@ -59,20 +65,46 @@ class Package {
   }
 
    // 安装npm包
-   async install() {}
+   async install(version) {
+      return npminstall({
+          root: this.targetPath,
+          storeDir: this.storeDir,
+          registry: getDetaultNpmRegistry(),
+          pkgs: [
+              {name: this.packageName, version: version || this.packageVersion}
+          ]
+      })
+  }
 
     // 更新包
-   async update() {}
+   async update() {
+      // 获取最新版本号
+       const latestVersion = await getLatestNpmVersion({npmName: this.packageName})
+       const filePath = this.specialCacheFilePath(latestVersion)
+       if(!pathEx(filePath)) {
+           await this.install(latestVersion)
+           this.packageVersion = latestVersion
+       }
+       return
+  }
 
     getEntryFilePath() {
       function _getEntryFile(tarPath) {
+          // 获取包packjson所在目录
           const Dir = pkgDir(tarPath)
-          console.log(Dir, 'Dir')
+          if(Dir) {
+              // 获取package.json
+              const pkg = require(path.resolve(Dir, 'package.json'))
+              if(pkg && pkg.main) {
+                  // 格式化入口文件路径 适配win32
+                  return formatPath(path.resolve(Dir, pkg.main))
+              }
+          }
       }
       if(this.storeDir) {
-          return this._getEntryFile(this.cacheFilePath)
+          return _getEntryFile(this.cacheFilePath)
       } else {
-          return this._getEntryFile(this.targetPath)
+          return _getEntryFile(this.targetPath)
       }
   }
 }

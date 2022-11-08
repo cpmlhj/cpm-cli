@@ -67,5 +67,6 @@ function getDetaultNpmRegistry(isOrigin = true) {
 module.exports = {
     getNpmInfo,
     getNpmSemverVersion,
-    getLatestNpmVersion
+    getLatestNpmVersion,
+    getDetaultNpmRegistry
 }

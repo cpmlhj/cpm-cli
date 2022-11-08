@@ -16,7 +16,7 @@ const colors = require('colors')
 const CACHE_DIR = 'dependencies'
 const VERSION = 'latest'
 const SETTINGS = {
-    'init': "@imooc-cli/init"
+    'init': "@cpm-cli/init"
 }
 
 async function exec() {

@@ -10,7 +10,7 @@ const path = require('path')
 const cp = require('child_process')
 
 const {Package} = require('@cpm-cli/models')
-const {logger} = require('@cpm-cli/utils')
+const {logger, isObject} = require('@cpm-cli/utils')
 const colors = require('colors')
 
 const CACHE_DIR = 'dependencies'
@@ -48,10 +48,13 @@ async function exec() {
                 packageVersion: VERSION
             })
         }
+        // 获取包入口文件
         const entryFile = pkg.getEntryFilePath()
         logger.info(entryFile)
         if(entryFile) {
-           const code = `require('${entryFile}').call(null, ${JSON.stringify(commandObj.opts())})`
+           const params = Array.from(arguments).slice(0, arguments.length - 1)
+            console.log(params, 'params???')
+           const code = `require('${entryFile}').call(null, ${JSON.stringify(params)})`
            const child = Spawn('node', ['-e', code], {
                cwd: process.cwd(),
                stdio: 'inherit'

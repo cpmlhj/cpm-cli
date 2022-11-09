@@ -66,9 +66,8 @@ function registerCommand() {
         }
     })
     program
-    .command('init')
+    .command('init [projectName]')
     .description('初始化 项目/组件 命令')
-    .arguments('[projectName]', '项目/组件 名称')
     .option('-f, --force', '强制初始化项目', false)
     .action(execCommand)
 

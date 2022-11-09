@@ -22,5 +22,12 @@
   },
   "bugs": {
     "url": "https://github.com/cpmlhj/cpm-cli/issues"
+  },
+  "dependencies": {
+    "@cpm-cli/helpers": "workspace:../../helpers",
+    "@cpm-cli/models": "workspace:../../models",
+    "@cpm-cli/utils": "workspace:../../utils",
+    "inquirer": "^7.3.3",
+    "user-home": "^3.0.0"
   }
 }

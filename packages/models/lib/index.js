@@ -1,5 +1,6 @@
 'use strict';
 
 module.exports = {
-    Package: require('./package')
+    Package: require('./package'),
+    Command: require('./command')
 }

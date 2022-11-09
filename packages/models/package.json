@@ -30,6 +30,7 @@
   "dependencies": {
     "@cpm-cli/helpers": "workspace:../helpers",
     "@cpm-cli/utils": "workspace:../utils",
+    "colors": "^1.4.0",
     "npminstall": "^6.5.2",
     "pkg-dir": "^5.0.0"
   }

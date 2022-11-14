@@ -18,9 +18,9 @@ importers:
 
   packages/commands/init:
     specifiers:
-      '@cpm-cli/helpers': workspace:../../helpers
-      '@cpm-cli/models': workspace:../../models
-      '@cpm-cli/utils': workspace:../../utils
+      '@cpm-cli/helpers': ../../helpers
+      '@cpm-cli/models': ../../models
+      '@cpm-cli/utils': ../../utils
       ejs: ^3.1.8
       glob: ^8.0.3
       inquirer: ^7.3.3
@@ -38,9 +38,9 @@ importers:
 
   packages/core:
     specifiers:
-      '@cpm-cli/helpers': workspace:../helpers
-      '@cpm-cli/models': workspace:../models
-      '@cpm-cli/utils': workspace:../utils
+      '@cpm-cli/helpers': ../helpers
+      '@cpm-cli/models': ../models
+      '@cpm-cli/utils': ../utils
       colors: ^1.4.0
       commander: ^9.4.1
       dotenv: ^16.0.3
@@ -63,8 +63,8 @@ importers:
 
   packages/models:
     specifiers:
-      '@cpm-cli/helpers': workspace:../helpers
-      '@cpm-cli/utils': workspace:../utils
+      '@cpm-cli/helpers': ../helpers
+      '@cpm-cli/utils': ../utils
       colors: ^1.4.0
       npminstall: ^6.5.2
       pkg-dir: ^5.0.0

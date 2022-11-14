@@ -24,13 +24,14 @@
     "url": "https://github.com/cpmlhj/cpm-cli/issues"
   },
   "dependencies": {
-    "@cpm-cli/helpers": "workspace:../../helpers",
-    "@cpm-cli/models": "workspace:../../models",
-    "@cpm-cli/utils": "workspace:../../utils",
+    "@cpm-cli/helpers": "../../helpers",
+    "@cpm-cli/models": "../../models",
+    "@cpm-cli/utils": "../../utils",
     "ejs": "^3.1.8",
     "glob": "^8.0.3",
     "inquirer": "^7.3.3",
     "kebab-case": "^1.0.2",
     "user-home": "^3.0.0"
-  }
+  },
+  "gitHead": "a6c6832ccc06917bbb0e7833de2c4ce0c65f391d"
 }

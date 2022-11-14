@@ -26,10 +26,10 @@
   "bugs": {
     "url": "https://github.com/cpmlhj/cpm-cli/issues"
   },
-  "gitHead": "2e953a793182ff465669cbc2cac97b8fb17f172a",
+  "gitHead": "a6c6832ccc06917bbb0e7833de2c4ce0c65f391d",
   "dependencies": {
-    "@cpm-cli/helpers": "workspace:../helpers",
-    "@cpm-cli/utils": "workspace:../utils",
+    "@cpm-cli/helpers": "../helpers",
+    "@cpm-cli/utils": "../utils",
     "colors": "^1.4.0",
     "npminstall": "^6.5.2",
     "pkg-dir": "^5.0.0"

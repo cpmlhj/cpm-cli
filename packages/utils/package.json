@@ -26,7 +26,7 @@
   "bugs": {
     "url": "https://github.com/cpmlhj/cpm-cli/issues"
   },
-  "gitHead": "2e953a793182ff465669cbc2cac97b8fb17f172a",
+  "gitHead": "a6c6832ccc06917bbb0e7833de2c4ce0c65f391d",
   "dependencies": {
     "npmlog": "^7.0.1"
   }

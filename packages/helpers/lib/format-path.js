@@ -3,7 +3,6 @@
 const path = require('path')
 
 function formatPath(tar) {
-    console.log(tar, '===')
     if(!tar) return;
     const sep = path.sep;
     if(sep === '/') return tar // Unix

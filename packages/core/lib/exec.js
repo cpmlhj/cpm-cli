@@ -7,10 +7,9 @@
  */
 
 const path = require('path')
-const cp = require('child_process')
 
 const {Package} = require('@cpm-cli/models')
-const {logger, isObject} = require('@cpm-cli/utils')
+const {logger, utils} = require('@cpm-cli/utils')
 const colors = require('colors')
 
 const CACHE_DIR = 'dependencies'
@@ -53,31 +52,18 @@ async function exec() {
         logger.info(entryFile)
         if(entryFile) {
            const params = Array.from(arguments).slice(0, arguments.length - 1)
-            console.log(params, 'params???')
            const code = `require('${entryFile}').call(null, ${JSON.stringify(params)})`
-           const child = Spawn('node', ['-e', code], {
+            const child = await utils.execSync('node', ['-e', code], {
                cwd: process.cwd(),
                stdio: 'inherit'
            })
-            child.on('error', e => {
-                logger.error(e.message)
-                process.exit(-1)
-            })
-            child.on('exit', e=> {
-                logger.info('执行成功')
-                process.exit(e)
-            })
+            if(child >= 0) {
+                logger.success("创建项目成功")
+                process.exit(child)
+            }
         }
     } catch(e) {
         logger.error(colors.red(e.message))
     }
 }
-
-function Spawn(cmd, args, opt) {
-    const win32 = process.platform === 'win32'
-    const command = win32 ? 'cmd': cmd
-    const cmdArgs = win32 ? ['/c'].concat(cmd, args) : args
-    return cp.spawn(command, cmdArgs, opt || {})
-}
-
 module.exports = exec

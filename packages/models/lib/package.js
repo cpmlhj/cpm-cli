@@ -57,7 +57,6 @@ class Package {
    async exists() {
       if(this.storeDir) {
           await this.prepare()
-          logger.verbose(this.cacheFilePath, '==========')
           return pathEx(this.cacheFilePath)
       } else {
           return pathEx(this.targetPath)
@@ -81,11 +80,13 @@ class Package {
       // 获取最新版本号
        const latestVersion = await getLatestNpmVersion({npmName: this.packageName})
        const filePath = this.specialCacheFilePath(latestVersion)
-       if(!pathEx(filePath)) {
+       if(! await pathEx(filePath)) {
            await this.install(latestVersion)
            this.packageVersion = latestVersion
+       } else {
+           this.packageVersion = latestVersion
        }
-       return
+
   }
 
     getEntryFilePath() {

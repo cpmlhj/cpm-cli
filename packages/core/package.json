@@ -31,7 +31,7 @@
   "dependencies": {
     "@cpm-cli/helpers": "workspace:../helpers",
     "@cpm-cli/utils": "workspace:../utils",
-      "@cpm-cli/models": "workspace:../models",
+    "@cpm-cli/models": "workspace:../models",
     "colors": "^1.4.0",
     "commander": "^9.4.1",
     "dotenv": "^16.0.3",

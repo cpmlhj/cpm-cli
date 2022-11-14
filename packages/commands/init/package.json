@@ -27,7 +27,10 @@
     "@cpm-cli/helpers": "workspace:../../helpers",
     "@cpm-cli/models": "workspace:../../models",
     "@cpm-cli/utils": "workspace:../../utils",
+    "ejs": "^3.1.8",
+    "glob": "^8.0.3",
     "inquirer": "^7.3.3",
+    "kebab-case": "^1.0.2",
     "user-home": "^3.0.0"
   }
 }

@@ -21,13 +21,19 @@ importers:
       '@cpm-cli/helpers': workspace:../../helpers
       '@cpm-cli/models': workspace:../../models
       '@cpm-cli/utils': workspace:../../utils
+      ejs: ^3.1.8
+      glob: ^8.0.3
       inquirer: ^7.3.3
+      kebab-case: ^1.0.2
       user-home: ^3.0.0
     dependencies:
       '@cpm-cli/helpers': link:../../helpers
       '@cpm-cli/models': link:../../models
       '@cpm-cli/utils': link:../../utils
+      ejs: 3.1.8
+      glob: 8.0.3
       inquirer: 7.3.3
+      kebab-case: 1.0.2
       user-home: 3.0.0
 
   packages/core:
@@ -2990,6 +2996,10 @@ packages:
 
   /just-diff/5.1.1:
     resolution: {integrity: sha512-u8HXJ3HlNrTzY7zrYYKjNEfBlyjqhdBkoyTVdjtn7p02RJD5NvR8rIClzeGA7t+UYP1/7eAkWNLU0+P3QrEqKQ==}
+    dev: false
+
+  /kebab-case/1.0.2:
+    resolution: {integrity: sha512-7n6wXq4gNgBELfDCpzKc+mRrZFs7D+wgfF5WRFLNAr4DA/qtr9Js8uOAVAfHhuLMfAcQ0pRKqbpjx+TcJVdE1Q==}
     dev: false
 
   /kind-of/6.0.3:

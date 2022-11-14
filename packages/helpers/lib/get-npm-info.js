@@ -48,7 +48,7 @@ async function getNpmSemverVersion({npmName, registry, targetVersion}) {
 async function getLatestNpmVersion({npmName, registry}) {
     const versions = await getNpmVersion(npmName, registry)
     if(versions) {
-        versions.sort((a,b) => semver.gt(a,b))
+        versions.sort((a,b) => semver.gt(b,a) ? 1 : -1)
         return versions[0]
     }
     return null
@@ -57,10 +57,10 @@ async function getLatestNpmVersion({npmName, registry}) {
 function getSemverVersion(base, vers, matchText) {
     return vers
         .filter(ve => semver.satisfies(ve, `${matchText}${base}`))
-        .sort((a, b) => semver.gt(a, b))
+        .sort((a, b) => semver.gt(b, a) ? 1 : -1)
 }
 
-function getDetaultNpmRegistry(isOrigin = true) {
+function getDetaultNpmRegistry(isOrigin = false) {
     return isOrigin && 'https://registry.npmjs.org' || 'https://registry.npm.taobao.org'
 }
 

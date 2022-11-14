@@ -1,6 +1,6 @@
 {
   "name": "@cpm-cli/core",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "@cpm-cli/core",
   "author": "cpmlhj <345829331@qq.com>",
   "homepage": "https://github.com/cpmlhj/cpm-cli#readme",
@@ -30,8 +30,8 @@
   },
   "dependencies": {
     "@cpm-cli/helpers": "workspace:../helpers",
-    "@cpm-cli/utils": "workspace:../utils",
     "@cpm-cli/models": "workspace:../models",
+    "@cpm-cli/utils": "workspace:../utils",
     "colors": "^1.4.0",
     "commander": "^9.4.1",
     "dotenv": "^16.0.3",

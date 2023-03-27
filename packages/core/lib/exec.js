@@ -26,7 +26,6 @@ async function exec() {
   const commandObj = arguments[arguments.length - 1];
   const packageName = SETTINGS[commandObj.name()];
   const HOME_PATH = process.env.CPM_CLI_HOME_PATH;
-  console.log(targetPath, "=====");
   try {
     if (!targetPath) {
       targetPath = path.resolve(HOME_PATH, CACHE_DIR);
@@ -61,7 +60,7 @@ async function exec() {
         cwd: process.cwd(),
         stdio: "inherit",
       });
-      if (child >= 0) {
+      if (child !== undefined && child === 0) {
         logger.success("创建项目成功");
         process.exit(child);
       }

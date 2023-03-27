@@ -20,11 +20,17 @@ importers:
     specifiers:
       '@cpm-cli/models': workspace:*
       '@cpm-cli/utils': workspace:*
+      ejs: ^3.1.8
+      glob: ^8.0.3
       inquirer: ^7.3.3
+      user-home: ^3.0.0
     dependencies:
       '@cpm-cli/models': link:../../models
       '@cpm-cli/utils': link:../../utils
+      ejs: 3.1.8
+      glob: 8.0.3
       inquirer: 7.3.3
+      user-home: 3.0.0
 
   packages/commands/init:
     specifiers:

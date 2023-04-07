@@ -19,6 +19,7 @@
     "ejs": "^3.1.8",
     "glob": "^8.0.3",
     "inquirer": "^7.3.3",
+    "pkg-up": "3.1.0",
     "user-home": "^3.0.0"
   },
   "repository": {

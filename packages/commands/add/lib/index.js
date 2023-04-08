@@ -9,35 +9,18 @@ const glob = require('glob')
 const ejs = require('ejs')
 const pkgup = require('pkg-up')
 const semver = require('semver')
-
-const PAGE_TEMPLATE = [
-	{
-		name: 'vue首页模板',
-		npmName: 'cpm-cli-dev-template-page-vue',
-		version: 'latest',
-		targetPath: 'src/views/Home',
-		ignore: ['assets/**']
-	}
-]
-
-const SECTION_TEMPLATE = [
-	{
-		name: 'vue3代码片段',
-		npmName: 'cpm-cli-dev-template-section-vue',
-		targetPath: '/',
-		version: 'latest'
-	},
-	{
-		name: 'vue3代码片段2',
-		npmName: 'cpm-cli-template-section-template',
-		targetPath: 'src/',
-		version: 'latest'
-	}
-]
+const { getPageTemplate, getSectionTemplate } = require('./getTemplate')
 
 const MODE_PAGE_SECTION = 'section'
 const MODE_PAGE_TEMPLATE = 'template'
 const CACHE_DIR_PREFIX = '.cpm'
+const TYPE_CUSTOM = 'custom'
+const TYPE_NORMAL = 'normal'
+
+const MAP_REQUEST = {
+	[MODE_PAGE_SECTION]: getSectionTemplate,
+	[MODE_PAGE_TEMPLATE]: getPageTemplate
+}
 
 class AddCommand extends Command {
 	init() {
@@ -84,10 +67,16 @@ class AddCommand extends Command {
 		if (await pathEx(this.copyPath))
 			throw new Error('页面文件夹已存在,名称为：' + name)
 	}
+
+	async fetchTemplate() {
+		const API = MAP_REQUEST[this.mode]
+		const result = await API()
+		if (result && result.data) return result.data
+		throw new Error(`${this.mode} api 请求失败:， ${result.message}`)
+	}
 	async getTemplate(mode = MODE_PAGE_TEMPLATE) {
 		const title = mode === MODE_PAGE_TEMPLATE ? '页面' : '代码片段'
-		const template =
-			mode === MODE_PAGE_TEMPLATE ? PAGE_TEMPLATE : SECTION_TEMPLATE
+		const template = await this.fetchTemplate()
 		const selectedTemplate = await inquirer.prompt({
 			type: 'list',
 			name: mode,
@@ -192,9 +181,12 @@ class AddCommand extends Command {
 		logger.verbose('copyPath', this.copyPath)
 		fse.ensureDirSync(templatePath)
 		fse.ensureDirSync(this.copyPath)
-		fse.copySync(templatePath, this.copyPath)
-		await this.ejsRender()
-		await this.dependenciesMerge(templatePath)
+		// 执行默认安装
+		if (this.pageTemplate.type === TYPE_NORMAL) {
+			await this.defaultInstallTemplate(templatePath)
+		} else {
+			await this.customInstallTemplate(templatePath)
+		}
 		logger.info('安装页面模板成功')
 	}
 
@@ -258,6 +250,35 @@ class AddCommand extends Command {
 		)
 		fse.copySync(templatePath, this.copyPath)
 	}
+
+	// 默认安装模式
+	async defaultInstallTemplate(templatePath) {
+		fse.copySync(templatePath, this.copyPath)
+		await this.ejsRender()
+		await this.dependenciesMerge(templatePath)
+	}
+
+	// 自定义安装模式
+	async customInstallTemplate(templatePath) {
+		// 获取自定义模板入口文件
+		const rootFile = this.package.getEntryFilePath()
+		if (fse.existsSync(rootFile)) {
+			const options = {
+				templatePath,
+				targetPath: this.copyPath,
+				template: this.pageTemplate
+			}
+			const code = `require(${rootFile})(${JSON.stringify(options)})`
+			await utils.execAsync('node', ['-e', code], {
+				stdio: 'inherit',
+				cwd: process.cwd()
+			})
+			logger.success('自定义模版安装成功')
+		} else {
+			throw new Error('自定义模板入口文件不存在！')
+		}
+	}
+
 	async ejsRender() {
 		const pageTemplate = this.pageTemplate
 		const copyPath = this.copyPath
@@ -378,7 +399,7 @@ class AddCommand extends Command {
 		if (command) {
 			const cmdArray = command.split(' ')
 			const args = cmdArray.slice(1)
-			ret = await utils.execSync(cmdArray[0], args, {
+			ret = await utils.execAsync(cmdArray[0], args, {
 				stdio: 'inherit',
 				cwd
 			})

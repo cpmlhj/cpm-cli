@@ -217,7 +217,7 @@ class InitCommand extends Command {
 		const { install, start } = this.templateInfo
 		if (install) {
 			const { code, args } = this.getTemplateCmd(install)
-			const res = await utils.execSync(code, args, {
+			const res = await utils.execAsync(code, args, {
 				cwd: process.cwd(),
 				stdio: 'inherit'
 			})
@@ -225,7 +225,7 @@ class InitCommand extends Command {
 			if (start) {
 				const { code: startCode, args: startArgs } =
 					this.getTemplateCmd(start)
-				const res = await utils.execSync(startCode, startArgs, {
+				const res = await utils.execAsync(startCode, startArgs, {
 					cwd: process.cwd(),
 					stdio: 'inherit'
 				})

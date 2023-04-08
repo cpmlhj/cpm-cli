@@ -16,6 +16,7 @@
   "dependencies": {
     "@cpm-cli/models": "workspace:*",
     "@cpm-cli/utils": "workspace:*",
+    "@cpm-cli/helpers": "workspace:*",
     "ejs": "^3.1.8",
     "glob": "^8.0.3",
     "inquirer": "^7.3.3",

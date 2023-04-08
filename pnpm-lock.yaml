@@ -27,6 +27,7 @@ importers:
 
   packages/commands/add:
     specifiers:
+      '@cpm-cli/helpers': workspace:*
       '@cpm-cli/models': workspace:*
       '@cpm-cli/utils': workspace:*
       ejs: ^3.1.8
@@ -35,6 +36,7 @@ importers:
       pkg-up: 3.1.0
       user-home: ^3.0.0
     dependencies:
+      '@cpm-cli/helpers': link:../../helpers
       '@cpm-cli/models': link:../../models
       '@cpm-cli/utils': link:../../utils
       ejs: 3.1.9

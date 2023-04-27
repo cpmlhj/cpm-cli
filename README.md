@@ -1,8 +1,8 @@
-# cpm-cli
+# pm
+
 # pm研发脚手架
 
 ## About
-
 
 ## Getting Started
 
@@ -17,13 +17,13 @@ npm install -g @cpm-cli/core
 项目/组件初始化
 
 ```bash
-cpm-cli init 
+pm init 
 ```
 
 强制清空当前文件夹
 
 ```bash
-cpm-cli init --force
+pm init --force
 ```
 
 ### 发布项目
@@ -31,28 +31,25 @@ cpm-cli init --force
 发布项目/组件
 
 ```bash
-cpm-cli publish
+pm publish
 ```
 
 强制更新所有缓存
 
 ```bash
-cpm-cli publish --resetServer
+pm publish --resetServer
 ```
-
-
-
 
 ## More
 
 DEBUG 模式：
 
 ```bash
-cpmli --debug
+pm add --debug
 ```
 
 调试本地包：
 
 ```bash
-cpm-cli  --targetPath <本地开发地址> 譬如 /Users/JUN/工程化/lhj-construct/PosterEditor/cpm-cli/packages/commands/add
+pm add --targetPath <本地开发地址> 譬如 /Users/JUN/工程化/lhj-construct/PosterEditor/pm/packages/commands/add
 ```

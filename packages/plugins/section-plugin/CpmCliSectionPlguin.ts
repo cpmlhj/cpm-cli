@@ -1,11 +1,11 @@
 import path from 'path'
 import fs from 'fs'
-import {Plugin} from 'vite'
+import { Plugin } from 'vite'
 
 const root = path.resolve(__dirname)
 const targetHtmlPath = path.resolve(root, './index.html')
 
-const CpmCliSectionPlguin = function ():Plugin {
+const CpmCliSectionPlguin = function (): Plugin {
 	return {
 		name: 'pm:section-plugin',
 		resolveId(id) {

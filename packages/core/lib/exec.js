@@ -16,7 +16,8 @@ const CACHE_DIR = 'dependencies'
 const VERSION = 'latest'
 const SETTINGS = {
 	init: '@cpm-cli/init',
-	add: '@cpm-cli/add'
+	add: '@cpm-cli/add',
+	publish: "@cpm-cli/publish"
 }
 
 async function exec() {

@@ -225,7 +225,7 @@ class InitCommand extends Command {
 			if (start) {
 				const { code: startCode, args: startArgs } =
 					this.getTemplateCmd(start)
-				const res = await utils.execAsync(startCode, startArgs, {
+				await utils.execAsync(startCode, startArgs, {
 					cwd: process.cwd(),
 					stdio: 'inherit'
 				})

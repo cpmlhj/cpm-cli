@@ -3,3 +3,4 @@ node_modules/
 lerna-debug.log
 packages/**/.pnpm-debug.log
 dist/**
+.fleet

@@ -17,7 +17,7 @@ const VERSION = 'latest'
 const SETTINGS = {
 	init: '@cpm-cli/init',
 	add: '@cpm-cli/add',
-	publish: "@cpm-cli/publish"
+	publish: '@cpm-cli/publish'
 }
 
 async function exec() {
@@ -62,7 +62,7 @@ async function exec() {
 				stdio: 'inherit'
 			})
 			if (child !== undefined && child === 0) {
-				logger.success('创建项目成功')
+				logger.success('执行完毕')
 				process.exit(child)
 			}
 		}
@@ -70,4 +70,5 @@ async function exec() {
 		logger.error(colors.red(e.message))
 	}
 }
+
 module.exports = exec

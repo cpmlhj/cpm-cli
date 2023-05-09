@@ -31,7 +31,9 @@ class Gitee extends gitServer {
 			})
 	}
 
-	getRemote() {}
+	getRemote(login, name) {
+		return `git@gitee.com:${login}/${name}.git`
+	}
 
 	getTokenHelp() {
 		return 'https://gitee.com/profile/sshkeys'
@@ -47,12 +49,25 @@ class Gitee extends gitServer {
 				name
 			})
 			.then((response) => {
-				console.log(response)
 				return this.handleResponse(response)
 			})
 	}
 
-	createOrgRepo() {}
+	createOrgRepo(org, name) {
+		return this.gitRequest
+			.post(
+				`/orgs/${org}repos`,
+				{
+					name
+				},
+				{
+					Accept: 'application/vnd.github.v3+json'
+				}
+			)
+			.then((response) => {
+				return this.handleResponse(response)
+			})
+	}
 
 	isHttpResponse(response) {
 		return (

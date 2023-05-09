@@ -3,9 +3,9 @@ const path = require('path')
 const userHome = require('user-home')
 const { logger, utils } = require('@cpm-cli/utils')
 const fse = require('fs-extra')
+const semver = require('semver')
 const inquirer = require('inquirer')
 const fs = require('fs')
-const { writeFile } = require('@cpm-cli/utils/lib/utils')
 const REPO_OWNER_USER = 'user'
 const REPO_OWNER_ORG = 'org'
 const DEFAULT_HOME_PATH = '.cpm'
@@ -14,6 +14,9 @@ const GIT_SERVER_FILE = '.gitServer'
 const GIT_SERVER_TOKEN = '.gitToken'
 const GIT_OWN_FILE = '.gitOwn'
 const GIT_LOGIN_FILE = '.gitLogin'
+const GIT_IGNORE = '.gitignore'
+const VERSION_RELEASE = 'release'
+const VERSION_DEVELOP = 'dev'
 const GIT_OWNER_TYPE = [
 	{
 		name: '个人',
@@ -49,7 +52,10 @@ class Git {
 		this.name = name
 		this.version = version
 		this.dir = dir
-		this.git = simpleGit(this.dir)
+		this.git = simpleGit({
+			baseDir: this.dir,
+			binary: 'git'
+		})
 		this.gitServer = null
 		this.config = { resetServer, resetToken }
 		this.homePath = null
@@ -58,10 +64,17 @@ class Git {
 		this.owner = null // 远程仓库类型
 		this.login = null // 远程仓库登录名
 		this.repo = null // 远程仓库对象
+		this.branch = null // 本地开发分支
 	}
 
-	init() {
-		console.log('init')
+	async init() {
+		/**
+		 * 初始化本地仓库
+		 */
+		if (!(await this.getRemote())) {
+			await this.initAndRemote()
+			await this.initCommit()
+		}
 	}
 
 	async prepare() {
@@ -79,6 +92,10 @@ class Git {
 		await this.checkGitOwner()
 		// 检测并创建远程仓库
 		await this.checkRepo()
+		// 检测gitIgnore文件
+		await this.checkGitIgnore()
+		// 执行本地git 初始化流程
+		await this.init()
 	}
 
 	checkHomePath() {
@@ -173,8 +190,8 @@ class Git {
 					})
 				).login
 			}
-			writeFile(ownerPath, owner)
-			writeFile(loginPath, login)
+			utils.writeFile(ownerPath, owner)
+			utils.writeFile(loginPath, login)
 		}
 		logger.success(` owner 获取成功 ${owner} ---> ${ownerPath}`)
 		logger.success(` login 获取成功 ${login} ---> ${loginPath}`)
@@ -184,15 +201,17 @@ class Git {
 
 	async checkRepo() {
 		let repo = await this.gitServer.getRepo(this.login, this.name)
+		logger.verbose('当前获取的仓库为:' + repo)
 		if (!repo) {
 			// 远程仓库不存在， 需要创建
-			console.log('创建')
 			try {
 				if (this.owner === REPO_OWNER_USER) {
-					console.log(this.name, '===')
 					repo = await this.gitServer.createRepo(this.name)
 				} else {
-					this.gitServer.createOrgRepo(this.name, this.login)
+					repo = await this.gitServer.createOrgRepo(
+						this.name,
+						this.login
+					)
 				}
 			} catch (e) {
 				logger.error(e)
@@ -205,6 +224,41 @@ class Git {
 			logger.success('远程仓库获取成功')
 		}
 		this.repo = repo
+	}
+
+	async checkGitIgnore() {
+		const filePath = path.resolve(this.dir, GIT_IGNORE)
+		if (!fs.existsSync(filePath)) {
+			utils.writeFile(
+				filePath,
+				`
+.DS_Store
+node_modules
+/dist
+
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+			`
+			)
+			logger.success(`自动写入${GIT_IGNORE}文件成功`)
+		}
 	}
 
 	async getUserAndOrgs() {
@@ -220,11 +274,218 @@ class Git {
 		if (!this.gitServer) throw new Error('git server 初始化失败')
 	}
 
+	async getRemote() {
+		const gitPath = path.resolve(this.dir, GIT_ROOT_DIRECTORY)
+		this.remote = await this.gitServer.getRemote(this.login, this.name)
+		if (fs.existsSync(gitPath)) {
+			logger.success('git初始化完成')
+			return true
+		}
+	}
+
+	async initAndRemote() {
+		logger.notice('git 初始化')
+		await this.git.init()
+		const remote = await this.git.getRemotes()
+		if (!remote || !remote.find((item) => item.name === 'origin')) {
+			await this.git.addRemote('origin', this.remote)
+		}
+	}
+
 	createPath(file) {
 		const ROOT_DIR = path.resolve(this.homePath, GIT_ROOT_DIRECTORY)
 		const filePath = path.resolve(ROOT_DIR, file)
 		fse.ensureDirSync(ROOT_DIR)
 		return filePath
+	}
+
+	async initCommit() {
+		// 检测代码冲突
+		await this.checkConflicted()
+		// 检测是否存在文件未commit
+		await this.checkNotCommited()
+		// 检测远程仓库master
+		if (await this.checkRemoteMaster()) {
+			// 拉取最新的master代码 并再次提交
+			await this.pullRemoteRepo('master', {
+				'--allow-unrelated-histories': null
+			})
+		} else {
+			// 不存在master
+			const { current: currentBranch } = await this.git.status()
+			// 适配 git2.28之后 默认分支为main
+			if (currentBranch === 'main') {
+				await this.pushRemoteRepo('main')
+				// 切换到master
+				await this.git.checkoutBranch('master', 'main')
+			}
+			await this.pushRemoteRepo('master')
+		}
+	}
+
+	async checkConflicted() {
+		logger.info('代码冲突检测')
+		const gitStatus = await this.git.status()
+		if (gitStatus.conflicted.length > 0)
+			throw new Error('当前代码存在冲突，请手动处理合并后再试')
+	}
+
+	async checkNotCommited() {
+		const gitStatus = await this.git.status()
+		if (
+			gitStatus.not_added.length > 0 ||
+			gitStatus.created.length > 0 ||
+			gitStatus.deleted.length > 0 ||
+			gitStatus.modified.length > 0 ||
+			gitStatus.renamed.length > 0
+		) {
+			await this.git.add(gitStatus.not_added)
+			await this.git.add(gitStatus.created)
+			await this.git.add(gitStatus.deleted)
+			await this.git.add(gitStatus.modified)
+			await this.git.add(gitStatus.renamed)
+			let message
+			while (!message) {
+				message = (
+					await inquirer.prompt({
+						type: 'text',
+						name: 'message',
+						message: '请输入提交信息'
+					})
+				).message
+			}
+			await this.git.commit(message)
+			logger.success('本次commit提交成功')
+		}
+	}
+
+	async checkRemoteMaster() {
+		const listRemote = await this.git.listRemote(['--refs'])
+		return listRemote && listRemote.indexOf('refs/heads/master') >= 0
+	}
+
+	async pushRemoteRepo(branchName) {
+		logger.info(`推送提交至${branchName}分支`)
+		await this.git.push(['-u', 'origin', `${branchName}`])
+		logger.success(`推送成功`)
+	}
+
+	async pullRemoteRepo(branchName, options = {}) {
+		logger.info(`同步远程${branchName}代码`)
+		await this.git
+			.pull('origin', branchName, options)
+			.catch((err) => logger.error(err.message))
+	}
+
+	// 自动化提价
+	async commit() {
+		/**
+		 * ① 生成开发分支
+		 * ② 在开发分支上提交代码
+		 * ③ 合并远程开发分支
+		 * ④ 提送开发分支
+		 */
+		await this.setCorrectVersion()
+	}
+
+	async setCorrectVersion() {
+		// 获取远程发布分支
+		// 规范: release/x.y.z, dve/x.y.z
+		// 版本号递增规范 major/minor/patch
+		logger.info('获取代码分支')
+		const remoteList = await this.getRemoteBranchList(VERSION_RELEASE)
+		let latestVersion
+		if (remoteList && remoteList.length > 0) {
+			latestVersion = remoteList[0]
+		}
+		logger.verbose('线上最新版本号', latestVersion)
+		// 生成本地开发分支
+		const devVersion = this.version
+		if (!latestVersion) {
+			this.branch = `${VERSION_DEVELOP}/${devVersion}`
+		} else if (semver.gt(this.version, latestVersion)) {
+			logger.info(
+				'当前版本大于线上最新版本',
+				`${devVersion} >= ${latestVersion}`
+			)
+			this.branch = `${VERSION_DEVELOP}/${devVersion}`
+		} else {
+			logger.info(
+				'当前版本线上版本大于本地版本',
+				`${latestVersion} >= ${devVersion}`
+			)
+			const incType = (
+				await inquirer.prompt({
+					type: 'list',
+					name: 'incType',
+					choices: [
+						{
+							name: `小版本 ${latestVersion} -> ${semver.inc(
+								latestVersion,
+								'patch'
+							)}`,
+							value: 'patch'
+						},
+						{
+							name: `中版本 ${latestVersion} -> ${semver.inc(
+								latestVersion,
+								'minor'
+							)}`,
+							value: 'minor'
+						},
+						{
+							name: `大版本 ${latestVersion} -> ${semver.inc(
+								latestVersion,
+								'major'
+							)}`,
+							value: 'major'
+						}
+					],
+					message: '自动升级版本，请选择版本类型',
+					default: 'patch'
+				})
+			).incType
+			const nextVersion = semver.inc(latestVersion, incType)
+			this.branch = `${VERSION_DEVELOP}/${nextVersion}`
+			this.version = nextVersion
+			this.syncVersionToPackageJson()
+		}
+	}
+
+	async getRemoteBranchList(type) {
+		const remoteList = await this.git.listRemote(['--refs'])
+		let reg
+		if (type === VERSION_RELEASE) {
+			reg = /.+?refs\/tags\/release\/(\d+\.\d+\.\d+)/g
+		} else {
+			//
+		}
+		return remoteList
+			.split('\n')
+			.map((remote) => {
+				const match = reg.exec(remote)
+				reg.lastIndex = 0
+				if (match && semver.valid(match[1])) return match[1]
+			})
+			.filter((item) => !!item)
+			.sort((a, b) => {
+				if (semver.lte(b, a)) {
+					if (a === b) return 0
+					return -1
+				}
+				return 1
+			})
+	}
+
+	/**
+	 * 将最新版本号同步到项目package.json
+	 */
+	syncVersionToPackageJson() {
+		const pkg = fse.readJsonSync(`${this.dir}/package.json`)
+		if (pkg && pkg.version !== this.version) {
+			pkg.version = this.version
+			fse.writeJsonSync(`${this.dir}/pacjage.json`, pkg, { spaces: 2 })
+		}
 	}
 }
 

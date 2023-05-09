@@ -6,17 +6,16 @@ const fse = require('fs-extra')
 
 class PublishCommand extends Command {
 	init() {
-		console.log(this._argv, 'publis')
 		this.options = this._argv.options
 	}
 
 	async exec() {
 		try {
 			/*
-             * 1.初始化检查
-               2.gitFlow自动化
-               3.云构建和云发布
-             */
+			 * 1.初始化检查
+			 * 2.gitFlow自动化
+			 * 3.云构建和云发布
+			 */
 			const startTime = new Date().getTime()
 			const endTime = new Date().getTime()
 			logger.info(
@@ -25,7 +24,8 @@ class PublishCommand extends Command {
 			)
 			await this.prepare()
 			const git = new Git(this.projectInfo, this.options)
-			await git.prepare()
+			await git.prepare() // 自动化提交准备以及仓库初始化
+			await git.commit() // 代码自动化提交
 		} catch (err) {
 			logger.error(err.message)
 			if (process.env.LOG_LEVEL === 'verbose') console.log(err)

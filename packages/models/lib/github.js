@@ -40,8 +40,8 @@ class Github extends gitServer {
 			})
 	}
 
-	getRemote() {
-		super.getRemote()
+	getRemote(login, name) {
+		return `git@github.com:${login}/${name}.git`
 	}
 
 	getTokenHelp() {
@@ -52,12 +52,16 @@ class Github extends gitServer {
 		return 'https://github.com/settings/keys'
 	}
 
-	createRepo() {
-		super.createRepo()
-	}
-
-	createOrgRepo() {
-		super.createOrgRepo()
+	createOrgRepo(org, name) {
+		return this.gitRequest.post(
+			`/orgs/${org}repos`,
+			{
+				name
+			},
+			{
+				Accept: 'application/vnd.github.v3+json'
+			}
+		)
 	}
 
 	isHttpResponse(response) {

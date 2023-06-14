@@ -386,6 +386,8 @@ pnpm-debug.log*
 		 * ④ 提送开发分支
 		 */
 		await this.setCorrectVersion()
+
+		await this.checkStash()
 	}
 
 	async setCorrectVersion() {
@@ -486,6 +488,15 @@ pnpm-debug.log*
 			pkg.version = this.version
 			fse.writeJsonSync(`${this.dir}/pacjage.json`, pkg, { spaces: 2 })
 		}
+	}
+
+	/**
+	 *
+	 */
+	async checkStash() {
+		logger.info('检测git stash区')
+		const stashList = await this.git.stashList()
+		console.log(stashList)
 	}
 }
 

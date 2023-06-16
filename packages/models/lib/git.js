@@ -387,7 +387,16 @@ pnpm-debug.log*
 		 */
 		await this.setCorrectVersion()
 
+		// 检测stash区
 		await this.checkStash()
+		// 检查代码冲突
+		await this.checkConflicted()
+		// 切换开发分支
+		await this.checkoutBranch(this.branch)
+		// 合并远程master分支到当前开发分支
+		await this.pullRemoteMaterAndBranch()
+
+		await this.pushRemoteRepo(this.branch)
 	}
 
 	async setCorrectVersion() {
@@ -460,7 +469,7 @@ pnpm-debug.log*
 		if (type === VERSION_RELEASE) {
 			reg = /.+?refs\/tags\/release\/(\d+\.\d+\.\d+)/g
 		} else {
-			//
+			reg = /.+?refs\/tags\/dev\/(\d+\.\d+\.\d+)/g
 		}
 		return remoteList
 			.split('\n')
@@ -486,7 +495,7 @@ pnpm-debug.log*
 		const pkg = fse.readJsonSync(`${this.dir}/package.json`)
 		if (pkg && pkg.version !== this.version) {
 			pkg.version = this.version
-			fse.writeJsonSync(`${this.dir}/pacjage.json`, pkg, { spaces: 2 })
+			fse.writeJsonSync(`${this.dir}/package.json`, pkg, { spaces: 2 })
 		}
 	}
 
@@ -496,7 +505,33 @@ pnpm-debug.log*
 	async checkStash() {
 		logger.info('检测git stash区')
 		const stashList = await this.git.stashList()
-		console.log(stashList)
+		if (stashList.all.length > 0) {
+			await this.git.stash(['pop'])
+		}
+		logger.success('stash pop 成功')
+	}
+
+	async checkoutBranch(branch_name) {
+		const localBranchlist = await this.git.branchLocal()
+		if (localBranchlist.all.indexOf(branch_name) >= 0) {
+			await this.git.checkout(branch_name)
+		} else {
+			await this.git.checkoutLocalBranch(branch_name)
+		}
+		logger.success(`成功切换分支 -- ${branch_name}`)
+	}
+
+	async pullRemoteMaterAndBranch() {
+		logger.info(`合并master到 -- ${this.branch}`)
+		await this.pullRemoteRepo('master')
+		await this.checkConflicted()
+		const remoteBranchList = await this.getRemoteBranchList()
+		if (remoteBranchList.indexOf(this.branch) >= 0) {
+			await this.pullRemoteRepo(this.branch)
+			await this.checkConflicted()
+		} else {
+			logger.success('不存在远程开发分支' + this.branch)
+		}
 	}
 }
 

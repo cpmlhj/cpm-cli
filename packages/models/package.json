@@ -37,6 +37,7 @@
     "npminstall": "^6.5.2",
     "pkg-dir": "^5.0.0",
     "simple-git": "^3.17.0",
+    "socket.io-client": "^4.6.2",
     "user-home": "^3.0.0"
   }
 }

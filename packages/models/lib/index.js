@@ -3,5 +3,6 @@
 module.exports = {
 	Package: require('./package'),
 	Command: require('./command'),
-	Git: require('./git')
+	Git: require('./git'),
+	cloudBuild: require('./cloudbuild')
 }

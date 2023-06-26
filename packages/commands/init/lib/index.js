@@ -136,7 +136,7 @@ class InitCommand extends Command {
 		// 初始化项目信息
 		if (proejectType === INIT_PROJECT_TYPE.TYPE_PROJECT) {
 			project = await inquirer.prompt(initPrompt)
-		} else if (proejectType === INIT_PROJECT_TYPE.TYPE_PROJECT) {
+		} else if (proejectType === INIT_PROJECT_TYPE.TYPE_COMPONENT) {
 			initPrompt.push({
 				type: 'input',
 				name: 'compoentDescription',
@@ -178,11 +178,7 @@ class InitCommand extends Command {
 			storeDir: storeDirPath
 		})
 		if (!(await pkg.exists())) {
-			try {
-				await pkg.install()
-			} catch (e) {
-				throw e
-			}
+			await pkg.install()
 		} else {
 			await pkg.update()
 		}
@@ -191,25 +187,21 @@ class InitCommand extends Command {
 	}
 	// 安装模板到本地目录
 	async installTemplate() {
-		try {
-			if (this.templateInfo) {
-				const cacheFilePath = path.resolve(
-					this.npmPkgInfo.cacheFilePath,
-					'template'
-				)
-				const targetPath = process.cwd()
-				fse.ensureDirSync(cacheFilePath)
-				fse.ensureDirSync(targetPath)
-				fse.copySync(cacheFilePath, targetPath)
-				// 替换项目信息到本地packjson
-				await this.ejsRender()
-				// 执行模板预设命令
-				await this.execTemplateCommand()
-			} else {
-				throw new Error('模式信息不存在')
-			}
-		} catch (e) {
-			throw e
+		if (this.templateInfo) {
+			const cacheFilePath = path.resolve(
+				this.npmPkgInfo.cacheFilePath,
+				'template'
+			)
+			const targetPath = process.cwd()
+			fse.ensureDirSync(cacheFilePath)
+			fse.ensureDirSync(targetPath)
+			fse.copySync(cacheFilePath, targetPath)
+			// 替换项目信息到本地packjson
+			await this.ejsRender()
+			// 执行模板预设命令
+			await this.execTemplateCommand()
+		} else {
+			throw new Error('模式信息不存在')
 		}
 	}
 

@@ -15,7 +15,7 @@ class Command {
 			throw new Error('命令参数异常！，参数必须为数组')
 		if (args.length < 1) throw new Error('命令参数异常！，参数不能为空')
 		this._argv = args
-		this.runner = new Promise((resolve, reject) => {
+		this.runner = new Promise((_) => {
 			let chain = Promise.resolve()
 			chain = chain.then(() => this.checkNodeVersion())
 			chain = chain.then(() => this.initArgs())

@@ -469,7 +469,7 @@ pnpm-debug.log*
 		if (type === VERSION_RELEASE) {
 			reg = /.+?refs\/tags\/release\/(\d+\.\d+\.\d+)/g
 		} else {
-			reg = /.+?refs\/tags\/dev\/(\d+\.\d+\.\d+)/g
+			reg = /.+?refs\/heads\/dev\/(\d+\.\d+\.\d+)/g
 		}
 		return remoteList
 			.split('\n')
@@ -526,7 +526,7 @@ pnpm-debug.log*
 		await this.pullRemoteRepo('master')
 		await this.checkConflicted()
 		const remoteBranchList = await this.getRemoteBranchList()
-		if (remoteBranchList.indexOf(this.branch) >= 0) {
+		if (remoteBranchList.indexOf(this.branch.split('/')[1]) >= 0) {
 			await this.pullRemoteRepo(this.branch)
 			await this.checkConflicted()
 		} else {

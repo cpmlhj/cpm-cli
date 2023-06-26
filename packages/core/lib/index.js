@@ -16,6 +16,17 @@ const { getNpmSemverVersion } = require('@cpm-cli/helpers')
 const { DEFAULT__CLI_HOME } = require('./constant')
 const program = new Command()
 
+process.on('unhandledRejection', (reason) => {
+	// uncaugheException 会捕获错误
+	throw reason
+})
+
+process.on('uncaugheException', (error) => {
+	// 未被捕获的错误
+	console.error('uncaughe', error)
+	process.exit(1)
+})
+
 async function core(...args) {
 	try {
 		logger.verbose(args)
@@ -80,6 +91,7 @@ function registerCommand() {
 		.description('发布 命令')
 		.option('-rs, --resetServer', '强制更新远程仓库')
 		.option('--resetToken', '强制更新远程仓库token')
+		.option('--buildCmd <cmd>', '构建命令')
 		.action(execCommand)
 
 	// 监听targetPath 选项 修改全局执行路径
@@ -123,7 +135,10 @@ function createDefaultEnv() {
 	if (!process.env.CPM_CLI_HOME) {
 		cli_config['cli_home'] = path.resolve(userHome, DEFAULT__CLI_HOME)
 	} else {
-		cli_config['cli_home'] = path.resolve(userHome, CPM_CLI_HOME)
+		cli_config['cli_home'] = path.resolve(
+			userHome,
+			process.env.CPM_CLI_HOME
+		)
 	}
 	process.env.CPM_CLI_HOME_PATH = cli_config['cli_home']
 }

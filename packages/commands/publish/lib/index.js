@@ -1,8 +1,10 @@
 'use strict'
-const { Command, Git } = require('@cpm-cli/models')
+const { Command, Git, cloudBuild } = require('@cpm-cli/models')
 const { logger } = require('@cpm-cli/utils')
 const path = require('path')
 const fse = require('fs-extra')
+
+const WHITE_COMMAND = ['npm', 'cnpm', 'pnpm']
 
 class PublishCommand extends Command {
 	init() {
@@ -26,6 +28,7 @@ class PublishCommand extends Command {
 			const git = new Git(this.projectInfo, this.options)
 			await git.prepare() // 自动化提交准备以及仓库初始化
 			await git.commit() // 代码自动化提交
+			await this.prepareBuild(git)
 		} catch (err) {
 			logger.error(err.message)
 			if (process.env.LOG_LEVEL === 'verbose') console.log(err)
@@ -48,6 +51,25 @@ class PublishCommand extends Command {
 				`package.json 信息不全,请检查是否存在name、version和scripts(需提供build命令)`
 			)
 		this.projectInfo = { name, scripts, version, dir: projectPath }
+	}
+
+	async prepareBuild(git) {
+		let { buildCmd } = this.options
+		if (buildCmd) {
+			this.checkCommand(buildCmd)
+		} else {
+			buildCmd = 'npm run build'
+		}
+		this.cloud_build = new cloudBuild({ git, config: { cmd: buildCmd } })
+		await this.cloud_build.init()
+		await this.cloud_build.build()
+	}
+
+	checkCommand(cmd) {
+		const splitCmd = cmd.split(' ')
+		const execCmd = splitCmd[0]
+		if (WHITE_COMMAND.includes(execCmd)) return true
+		throw new Error(`${execCmd} 不是有效的可执行命令`)
 	}
 }
 
